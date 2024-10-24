@@ -1,4 +1,4 @@
-# atorvi - ATomic ORbitals VIzualization
+# atorvi - ATomic ORbitals VIsualization
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 

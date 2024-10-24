@@ -1,12 +1,12 @@
 """
-atorvi - ATomic ORbitals VIzualization 
+atorvi - ATomic ORbitals VIsualization 
 a library for visualizing individual atomic orbitals and their various linear combinations.
 The result is a file in .xsf format, which can be opened and visualized using software like XCrysDen or VESTA.
 """
 
 __author__ = "Dmitry Korotin"
 __author_email__ = "dmitry@korotin.name"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __license__ = "MIT"
 
 from .atomic_orbitals import (

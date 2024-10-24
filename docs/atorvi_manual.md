@@ -9,7 +9,7 @@ listings-disable-line-numbers: true
 ...
 
 
-# User manual for atorvi - ATomic ORbitals VIzualization package
+# User manual for atorvi - ATomic ORbitals VIsualization package
 
 ![](img/titlepic.png)
 
