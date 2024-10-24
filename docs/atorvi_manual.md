@@ -57,15 +57,15 @@ The package generates files in XCrysDen format, enabling both interactive explor
 ## Minimal theory: Atomic orbitals
 
 The atomic orbital of the [hydrogen-like atom](https://en.wikipedia.org/wiki/Hydrogen-like_atom) with quantum numbers $n$ and $\ell$ is calculated as:
-$$
+```math
 \psi_{n \ell}(\mathbf{r}) = R_{n \ell}(r) X_{\ell c}(\mathbf{r}),
- $$
+```
  where $X_{\ell c}$ are the [cubic harmonics](https://en.wikipedia.org/wiki/Cubic_harmonic).
 
 The radial part of the atomic orbital is calculated as:
-$$
+```math
  R_{n \ell} (r) = \sqrt {{\left ( \frac{2 Z}{n a_0} \right ) }^3\frac{(n-\ell-1)!}{2n{(n+\ell)!}} } e^{- Z r / {n a_0}} \left ( \frac{2 Z r}{n a_0} \right )^{\ell} L_{n-\ell-1}^{(2\ell+1)} \left ( \frac{2 Z r}{n a_0} \right ) ,
- $$
+```
 where:
 $L_{n-\ell-1}^{(2 \ell+1)}$ – are the [generalized Laguerre polynomials](https://en.wikipedia.org/wiki/Laguerre_polynomials#Generalized_Laguerre_polynomials), $a_0$ is the Bohr radius and $Z$ is the screened nuclear charge.
 We use the effective nuclear charge by [Clementi *et al.*](https://doi.org/10.1063%2F1.1733573) to account the shielding effect of inner-shell electrons on outer-shell electrons, providing a more accurate representation of the potential energy experienced by electrons in multi-electron atoms during calculations.

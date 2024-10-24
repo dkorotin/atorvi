@@ -49,10 +49,12 @@ outfile.write_data()
 Then just open the `Ni_orbital.xsf` file in your favorite visualization software.
 
 The orbitals available for generation are:
-$$s$$
-$$p_z, p_x, p_y$$
-$$d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{xy}, d_{x^2-y^2} $$
-$$f_{z^3}, f_{xz^2}, f_{yz^2}, f_{xyz}, f_{z(x^2-y^2)}, f_{x(x^2-3y^2)}, f_{y(3x^2-y^2)}$$
+```math
+s, \\
+p_z, p_x, p_y \\
+d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{xy}, d_{x^2-y^2} \\
+f_{z^3}, f_{xz^2}, f_{yz^2}, f_{xyz}, f_{z(x^2-y^2)}, f_{x(x^2-3y^2)}, f_{y(3x^2-y^2)} 
+```
 
 ```python
 print(atorvi.supported_orbitals)
