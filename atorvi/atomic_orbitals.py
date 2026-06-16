@@ -2,7 +2,20 @@ __author__ = "Dmitry Korotin"
 __author_email__ = "dmitry@korotin.name"
 
 import numpy as np
-from scipy.special import sph_harm, genlaguerre, factorial
+from scipy.special import genlaguerre, factorial
+
+try:
+    from scipy.special import sph_harm_y
+except ImportError:  # pragma: no cover - exercised only with older SciPy
+    from scipy.special import sph_harm as _scipy_sph_harm
+
+    def sph_harm(m, n, phi, theta):
+        return _scipy_sph_harm(m, n, phi, theta)
+
+else:
+
+    def sph_harm(m, n, phi, theta):
+        return sph_harm_y(n, m, theta, phi)
 
 p_orbitals = ["p_z", "p_x", "p_y"]
 d_orbitals = ["d_{3z^2-r^2}", "d_{xz}", "d_{yz}", "d_{xy}", "d_{x^2-y^2}"]
