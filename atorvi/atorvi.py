@@ -360,8 +360,8 @@ def main():
             # Get atomic number
             try:
                 z_number = get_atomic_number(element)
-            except KeyError:
-                print(f"Error: Unknown element '{element}'")
+            except ValueError as exc:
+                print(f"Error: {exc}")
                 continue
             
             # Add orbital

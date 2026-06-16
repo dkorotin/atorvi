@@ -36,8 +36,7 @@ def get_atomic_number(element_name):
     Returns the atomic number of the given element.
 
     This function takes the symbol of a chemical element and returns its
-    corresponding atomic number from the periodic table. If the element is
-    not found, the function returns None.
+    corresponding atomic number from the periodic table.
 
     Parameters:
     ----------
@@ -46,8 +45,13 @@ def get_atomic_number(element_name):
 
     Returns:
     -------
-    int or None
-        The atomic number of the element if it is found, otherwise None.
+    int
+        The atomic number of the element.
+
+    Raises:
+    ------
+    ValueError
+        If the element symbol is unknown.
     """
     # fmt: off
     periodic_table = {
@@ -68,7 +72,10 @@ def get_atomic_number(element_name):
         'Og': 118
     }
     # fmt: on
-    return periodic_table.get(element_name)
+    try:
+        return periodic_table[element_name]
+    except KeyError as exc:
+        raise ValueError(f"Unknown element: {element_name}") from exc
 
 
 def cart2sph(x, y, z):
