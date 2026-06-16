@@ -14,17 +14,13 @@ class OrbitalFile:
     """
 
     def __init__(self, filename, grid_step=0.05) -> None:
-        self.file = open(filename, "w")
+        self.filename = filename
         self.box_origin = [-2, -2, -2]
         self.box_size = [4, 4, 4]
         self.orbitals = []
         self.grid_step = grid_step
         self.atoms = []
         self.is_crystal = False
-
-    def __del__(self):
-        if not self.file.closed:
-            self.file.close()
 
     def _calculate_orbital_grid(self, orbital, position=[0.0, 0.0, 0.0], znumber=8):
 
@@ -41,7 +37,7 @@ class OrbitalFile:
 
         return orbital_grid
 
-    def _write_orbitals(self, squared):
+    def _write_orbitals(self, file, squared):
 
         self._generate_box()
 
@@ -53,48 +49,48 @@ class OrbitalFile:
         if squared:
             self.datagrid = self.datagrid**2
 
-        self.file.write("\nBEGIN_BLOCK_DATAGRID_3D\nmy_datagrid\n")
-        self.file.write("BEGIN_DATAGRID_3D\n")
-        self.file.write(f"{self.grid[0]} {self.grid[1]} {self.grid[2]}\n")
-        self.file.write(
+        file.write("\nBEGIN_BLOCK_DATAGRID_3D\nmy_datagrid\n")
+        file.write("BEGIN_DATAGRID_3D\n")
+        file.write(f"{self.grid[0]} {self.grid[1]} {self.grid[2]}\n")
+        file.write(
             f"{self.box_origin[0]} {self.box_origin[1]} {self.box_origin[2]}\n"
         )
-        self.file.write(f"{self.box_size[0]} 0 0\n")
-        self.file.write(f"0 {self.box_size[1]} 0\n")
-        self.file.write(f"0 0 {self.box_size[2]}\n")
+        file.write(f"{self.box_size[0]} 0 0\n")
+        file.write(f"0 {self.box_size[1]} 0\n")
+        file.write(f"0 0 {self.box_size[2]}\n")
 
         outdata = self.datagrid.T
         for vec in outdata:
-            np.savetxt(self.file, vec, fmt="%12.9f", footer=" ", comments="")
+            np.savetxt(file, vec, fmt="%12.9f", footer=" ", comments="")
 
-        self.file.write("END_DATAGRID_3D\n")
-        self.file.write("END_BLOCK_DATAGRID_3D\n")
+        file.write("END_DATAGRID_3D\n")
+        file.write("END_BLOCK_DATAGRID_3D\n")
 
-    def _write_atoms(self):
+    def _write_atoms(self, file):
 
         if self.is_crystal:
-            self.file.write("CRYSTAL\nPRIMVEC\n")
-            self.file.writelines(
+            file.write("CRYSTAL\nPRIMVEC\n")
+            file.writelines(
                 f"{row[0]:9.6f} {row[1]:9.6f} {row[2]:9.6f}\n"
                 for row in self.lattice.matrix
             )
 
-            self.file.write("CONVVEC\n")
-            self.file.writelines(
+            file.write("CONVVEC\n")
+            file.writelines(
                 f"{row[0]:9.6f} {row[1]:9.6f} {row[2]:9.6f}\n"
                 for row in self.lattice.matrix
             )
 
-            self.file.write("PRIMCOORD\n")
-            self.file.write(f"{len(self.atoms)} 1\n")
+            file.write("PRIMCOORD\n")
+            file.write(f"{len(self.atoms)} 1\n")
         else:
 
-            self.file.write("ATOMS\n")
+            file.write("ATOMS\n")
 
         for at in self.atoms:
             atomic_number = get_atomic_number(at[0])
             x, y, z = at[1]
-            self.file.write(f"{atomic_number:3n}  {x:9.6f}  {y:9.6f}  {z:9.6f}\n")
+            file.write(f"{atomic_number:3n}  {x:9.6f}  {y:9.6f}  {z:9.6f}\n")
 
     def add_atoms(self, atoms):
         """
@@ -128,15 +124,16 @@ class OrbitalFile:
         and closes it.
         """
 
-        if len(self.atoms) > 0:
-            self._write_atoms()
+        with open(self.filename, "w") as file:
+            if len(self.atoms) > 0:
+                self._write_atoms(file)
 
-        if len(self.orbitals) > 0:
-            self._write_orbitals( squared )
+            if len(self.orbitals) > 0:
+                self._write_orbitals(file, squared)
 
-        print(f"\nFile {self.file.name} successfully written")
+            filename = file.name
 
-        self.file.close()
+        print(f"\nFile {filename} successfully written")
 
     def _generate_box(self):
         min_orbital_size = 5.0
