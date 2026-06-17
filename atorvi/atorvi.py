@@ -3,6 +3,20 @@ __author_email__ = "dmitry@korotin.name"
 
 import numpy as np
 from .atomic_orbitals import *
+from .qe_output import (
+    ORBITALS_BY_L,
+    QE_ORBITAL_FIX,
+    SPINS,
+    parse_qe_hubbard_occupations,
+    parse_qe_structure,
+    select_qe_hubbard_atoms,
+)
+
+
+class _Lattice:
+    def __init__(self, matrix):
+        self.matrix = np.array(matrix, dtype=float)
+
 
 class OrbitalFile:
     """
@@ -237,13 +251,106 @@ class OrbitalFile:
             The pymatgen Structure object representing the crystal.
         """
 
-        crystal = structure
+        atoms = [(atom.specie.symbol, atom.coords) for atom in structure.sites]
+        self._set_crystal(structure.lattice.matrix, atoms)
+
+    def _set_crystal(self, lattice_matrix, atoms):
         self.is_crystal = True
+        self.lattice = _Lattice(lattice_matrix)
+        self.atoms = [
+            (element, np.array(coords, dtype=float)) for element, coords in atoms
+        ]
 
-        self.lattice = crystal.lattice
+    def orbitals_from_qe(
+        self,
+        qe_outfile,
+        atoms=None,
+        l=2,
+        spin="both",
+        mode="electron",
+        eigenstate="all",
+    ):
+        """
+        Add orbitals mixed according to final QE DFT+U occupation matrices.
 
-        for atom in crystal.sites:
-            self.atoms.append((atom.specie.symbol, atom.coords))
+        Parameters
+        ----------
+        qe_outfile : str or pathlib.Path
+            Path to a Quantum ESPRESSO pw.x output file.
+        atoms : list, optional
+            QE 1-based atom numbers. By default all Hubbard atoms for ``l`` are used.
+        l : int, optional
+            Orbital quantum number of the Hubbard manifolds to visualize.
+        spin : {"up", "down", "both"}, optional
+            Spin channel to use. ``both`` adds both channels to the same grid.
+        mode : {"electron", "hole"}, optional
+            Use occupation eigenvalues directly or ``1 - eigenvalue``.
+        eigenstate : {"all", "dominant"} or int, optional
+            Add all occupation eigenvectors, only the largest-weight eigenvector
+            for the requested ``mode``, or a specific zero-based eigenvector.
+        """
+        if l not in ORBITALS_BY_L:
+            raise ValueError("l must be one of 0, 1, 2, or 3")
+        if spin not in ("up", "down", "both"):
+            raise ValueError("spin must be 'up', 'down', or 'both'")
+        if mode not in ("electron", "hole"):
+            raise ValueError("mode must be 'electron' or 'hole'")
+        if not (
+            eigenstate in ("all", "dominant") or isinstance(eigenstate, int)
+        ):
+            raise ValueError("eigenstate must be 'all', 'dominant', or an int")
+
+        with open(qe_outfile) as file:
+            lines = file.readlines()
+
+        lattice_matrix, qe_atoms = parse_qe_structure(lines)
+        occupations = parse_qe_hubbard_occupations(lines)
+        if not occupations:
+            raise ValueError("No Hubbard occupation matrices found in QE output")
+
+        self._set_crystal(lattice_matrix, qe_atoms)
+
+        orbitals = ORBITALS_BY_L[l]
+        selected_atoms = select_qe_hubbard_atoms(
+            occupations, atoms, l, len(qe_atoms)
+        )
+        spin_numbers = [1, 2] if spin == "both" else [SPINS[spin]]
+
+        for qe_atom_number in selected_atoms:
+            atom_data = occupations[qe_atom_number]
+            for spin_number in spin_numbers:
+                if spin_number not in atom_data["spins"]:
+                    raise ValueError(
+                        f"Atom {qe_atom_number} has no spin {spin_number} Hubbard data"
+                    )
+
+                spin_data = atom_data["spins"][spin_number]
+                eigenvalues = spin_data["eigenvalues"]
+                eigenvectors = spin_data["eigenvectors"]
+                weights = (
+                    eigenvalues if mode == "electron" else 1.0 - eigenvalues
+                )
+                if eigenstate == "all":
+                    column_indices = range(len(eigenvalues))
+                elif eigenstate == "dominant":
+                    column_indices = [int(np.argmax(weights))]
+                else:
+                    if eigenstate < 0 or eigenstate >= len(eigenvalues):
+                        raise ValueError(
+                            f"eigenstate index must be in 0..{len(eigenvalues) - 1}"
+                        )
+                    column_indices = [eigenstate]
+
+                for column_index in column_indices:
+                    weight = weights[column_index]
+                    for row_index, orbital in enumerate(orbitals):
+                        coeff = eigenvectors[row_index, column_index] * weight
+                        coeff *= QE_ORBITAL_FIX.get(orbital, 1.0)
+                        self.add_orbital_at_atom(
+                            orbital, qe_atom_number - 1, coeff=coeff
+                        )
+
+        return self
 
     def add_orbital_at_element(self, orbital, element, coeff=1.0):
         """
@@ -292,6 +399,7 @@ def get_bbox_center_and_size(points):
     bounding_box_size = 2 * max_distances
 
     return center, bounding_box_size
+
 
 def main():
     """

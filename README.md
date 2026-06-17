@@ -24,6 +24,8 @@ pip install atorvi
 
 - **Orbital Squared Moduli**: Generate squared moduli of orbitals, providing insight into their spatial distribution and probability densities.
 
+- **DFT+U State Visualization**: Visualize local electron or hole states from Quantum ESPRESSO `+U` occupation-matrix eigenvectors for selected atoms.
+
 Examples of orbitals generated with **atorvi**: could be found in [examples](./examples/) folder.
 
 ## Quick start
@@ -52,8 +54,8 @@ The orbitals available for generation are:
 ```math
 s, \\
 p_z, p_x, p_y \\
-d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{xy}, d_{x^2-y^2} \\
-f_{z^3}, f_{xz^2}, f_{yz^2}, f_{xyz}, f_{z(x^2-y^2)}, f_{x(x^2-3y^2)}, f_{y(3x^2-y^2)} 
+d_{3z^2-r^2}, d_{xz}, d_{yz}, d_{x^2-y^2}, d_{xy} \\
+f_{z^3}, f_{xz^2}, f_{yz^2}, f_{z(x^2-y^2)}, f_{xyz}, f_{x(x^2-3y^2)}, f_{y(3x^2-y^2)} 
 ```
 
 ```python
@@ -61,8 +63,8 @@ print(atorvi.supported_orbitals)
 
 ['s', 
 'p_z', 'p_x', 'p_y', 
-'d_{3z^2-r^2}', 'd_{xz}', 'd_{yz}', 'd_{xy}', 'd_{x^2-y^2}', 
-'f_{z^3}', 'f_{xz^2}', 'f_{yz^2}', 'f_{xyz}', 'f_{z(x^2-y^2)}', 'f_{x(x^2-3y^2)}', 'f_{y(3x^2-y^2)}']
+'d_{3z^2-r^2}', 'd_{xz}', 'd_{yz}', 'd_{x^2-y^2}', 'd_{xy}', 
+'f_{z^3}', 'f_{xz^2}', 'f_{yz^2}', 'f_{z(x^2-y^2)}', 'f_{xyz}', 'f_{x(x^2-3y^2)}', 'f_{y(3x^2-y^2)}']
 ```
 
 ### 2. CLI Interactive Mode
