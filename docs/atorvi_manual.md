@@ -29,8 +29,7 @@ listings-disable-line-numbers: true
       - [3.3. Orbitals at all atoms of the same element](#33-orbitals-at-all-atoms-of-the-same-element)
       - [3.4. Mixing (or hybridization) of atomic orbitals](#34-mixing-or-hybridization-of-atomic-orbitals)
   - [Step 4: Write the file](#step-4-write-the-file)
-- [Electrons or holes distribution from DFT calculations](#electrons-or-holes-distribution-from-dft-calculations)
-- [Important notes](#important-notes)
+- [Visualizing electron and hole states from DFT+U occupation matrices](#visualizing-electron-and-hole-states-from-dftu-occupation-matrices)
 - [Author](#author)
 
 
@@ -58,15 +57,15 @@ The package generates files in XCrysDen format, enabling both interactive explor
 ## Minimal theory: Atomic orbitals
 
 The atomic orbital of the [hydrogen-like atom](https://en.wikipedia.org/wiki/Hydrogen-like_atom) with quantum numbers $n$ and $\ell$ is calculated as:
-```math
+$$
 \psi_{n \ell}(\mathbf{r}) = R_{n \ell}(r) X_{\ell c}(\mathbf{r}),
-```
+$$
  where $X_{\ell c}$ are the [cubic harmonics](https://en.wikipedia.org/wiki/Cubic_harmonic).
 
 The radial part of the atomic orbital is calculated as:
-```math
+$$
  R_{n \ell} (r) = \sqrt {{\left ( \frac{2 Z}{n a_0} \right ) }^3\frac{(n-\ell-1)!}{2n{(n+\ell)!}} } e^{- Z r / {n a_0}} \left ( \frac{2 Z r}{n a_0} \right )^{\ell} L_{n-\ell-1}^{(2\ell+1)} \left ( \frac{2 Z r}{n a_0} \right ) ,
-```
+$$
 where:
 $L_{n-\ell-1}^{(2 \ell+1)}$ – are the [generalized Laguerre polynomials](https://en.wikipedia.org/wiki/Laguerre_polynomials#Generalized_Laguerre_polynomials), $a_0$ is the Bohr radius and $Z$ is the screened nuclear charge.
 We use the effective nuclear charge by [Clementi *et al.*](https://doi.org/10.1063%2F1.1733573) to account the shielding effect of inner-shell electrons on outer-shell electrons, providing a more accurate representation of the potential energy experienced by electrons in multi-electron atoms during calculations.
@@ -257,44 +256,44 @@ This situation commonly occurs in systems with orbital ordering, charge dispropo
 The `orbitals_from_qe` method reads the occupation-matrix eigenvalues and eigenvectors from the Quantum ESPRESSO output file and converts them into real-space orbital visualizations for selected atoms.
 
 For a given atom and spin channel, the Hubbard occupation matrix is represented by a matrix $\mathbf{N}$. Its eigenvalues and eigenvectors are printed in the Quantum ESPRESSO output file:
-\mathbf{N} \mathbf{v}_i = \lambda_i \mathbf{v}_i .
-Here, $\lambda_i$ is the occupation of the local eigenstate $i$, while $\mathbf{v}i$ is the corresponding eigenvector. The components $v{mi}$ of this eigenvector give the expansion coefficients of the local state in the basis of atomic orbitals $\phi_m(\mathbf r)$:
+$\mathbf{N} \mathbf{v}_i = \lambda_i \mathbf{v}_i$.
+Here, $\lambda_i$ is the occupation of the local eigenstate $i$, while $\mathbf{v}_i$ is the corresponding eigenvector. The components $v_{mi}$ of this eigenvector give the expansion coefficients of the local state in the basis of atomic orbitals $\phi_m(\mathbf r)$:
 
 
-```math
+$$
 \varphi_i(\mathbf r) = \sum_m v_{mi}\phi_m(\mathbf r).
-```
+$$
 
 For electron-state visualization, `atorvi` weights each eigenstate by its occupation:
 
-```math
+$$
 \psi_i^{\mathrm{electron}}(\mathbf r)
 = \lambda_i \sum_m v_{mi}\phi_m(\mathbf r).
-```
+$$
 
 For hole-state visualization, the complementary unoccupied weight is used:
 
-```math
+$$
 \psi_i^{\mathrm{hole}}(\mathbf r)
 = (1-\lambda_i) \sum_m v_{mi}\phi_m(\mathbf r).
-```
+$$
 
 If `eigenstate="all"`, all occupation-matrix eigenvectors are included in the generated orbital field:
 
-```math
+$$
 \Psi(\mathbf r)
 = \sum_i w_i \sum_m v_{mi}\phi_m(\mathbf r),
-```
+$$
 
 with
 
-```math
+$$
 w_i =
 \begin{cases}
 \lambda_i, & \text{for } \texttt{mode="electron"},\\
 1-\lambda_i, & \text{for } \texttt{mode="hole"}.
 \end{cases}
-```
+$$
 
 If `eigenstate="dominant"`, only the eigenvector with the largest relevant weight is used. Thus, in `mode="electron"` the dominant state is the most occupied one, whereas in `mode="hole"` it is the most unoccupied one.
 
@@ -313,7 +312,7 @@ d_{xy}        -0.609   0.793  -0.000  -0.000  -0.000
 
 The first eigenstate has occupation $\lambda_1 = 0.221$. For hole visualization, its unoccupied weight is therefore $1-\lambda_1 = 0.779$, and the corresponding real-space state is constructed as
 
-```math
+$$
 \psi_1^{\mathrm{hole}}(\mathbf r)
 =
 0.779
@@ -321,7 +320,7 @@ The first eigenstate has occupation $\lambda_1 = 0.221$. For hole visualization,
 -0.793\phi_{d_{3z^2-r^2}}(\mathbf r)
 -0.609\phi_{d_{xy}}(\mathbf r)
 \right].
-```
+$$
 
 In this way, the numerical occupation-matrix eigenvectors from the Quantum ESPRESSO output are transformed into a spatial orbital shape that can be inspected visually.
 
