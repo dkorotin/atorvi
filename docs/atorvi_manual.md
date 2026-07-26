@@ -313,10 +313,7 @@ d_{xy}        -0.609   0.793  -0.000  -0.000  -0.000
 The first eigenstate has occupation $\lambda_1 = 0.221$. For hole visualization, its unoccupied weight is therefore $1-\lambda_1 = 0.779$, and the corresponding real-space state is constructed as
 
 $$
-\psi_1^{\mathrm{hole}}(\mathbf r)
-=
-0.779
-\left[
+\psi_1^{\mathrm{hole}}(\mathbf r) = 0.779 \left[
 -0.793\phi_{d_{3z^2-r^2}}(\mathbf r)
 -0.609\phi_{d_{xy}}(\mathbf r)
 \right].
