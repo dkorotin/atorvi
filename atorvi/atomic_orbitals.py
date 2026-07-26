@@ -135,6 +135,12 @@ def radial_part(r, l, z):
         n = 4
     elif z < 55 or z in range(72, 81) or z in range(89, 104):
         n = 5
+    elif z < 57:
+        n = 6
+    elif z < 87:
+        n = 6
+    elif z < 89:
+        n = 7
     
     # Use tabulated screened nuclear charge (Clementi's by default and Slater's if not available)
     zeff = Z_EFF[z][l]
