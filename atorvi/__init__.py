@@ -6,7 +6,7 @@ The result is a file in .xsf format, which can be opened and visualized using so
 
 __author__ = "Dmitry Korotin"
 __author_email__ = "dmitry@korotin.name"
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __license__ = "MIT"
 
 from .atomic_orbitals import (
