@@ -2,7 +2,14 @@ __author__ = "Dmitry Korotin"
 __author_email__ = "dmitry@korotin.name"
 
 import numpy as np
-from .atomic_orbitals import *
+from .atomic_orbitals import (
+    cart2sph,
+    d_orbitals,
+    f_orbitals,
+    get_atomic_number,
+    get_orbital,
+    supported_orbitals,
+)
 from .qe_output import (
     ORBITALS_BY_L,
     QE_ORBITAL_FIX,
@@ -230,9 +237,9 @@ class OrbitalFile:
             from pymatgen.core.structure import IStructure
         except ImportError:
             raise ImportError(
-                "\nOptional dependency 'pymatgen' required for crystal_from_file is not installed. \n\
-                You can install it by running: pip install pymatgen"
-            )
+                "Optional dependency 'pymatgen' required for crystal_from_file is not installed.\n"
+                "You can install it by running: pip install pymatgen"
+            ) from None
 
         structure = IStructure.from_file(filename)
         self.crystal_from_pymatgen(structure)
